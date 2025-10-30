@@ -181,6 +181,35 @@ class Soundcraft extends utils.Adapter {
 				native: {},
 			});
 		}
+
+		// Create input routing channels for this AUX bus
+		for (let i = 0; i < this.mixerChannels.hw; i++) {
+			await this.createAuxInputObjects(aux, i);
+		}
+	}
+
+	private async createAuxInputObjects(aux: number, input: number): Promise<void> {
+		const basePath = `aux.${aux}.input.${input}`;
+
+		await this.setObjectNotExistsAsync(basePath, {
+			type: "channel",
+			common: { name: `AUX ${aux} Input ${input}` },
+			native: {},
+		});
+
+		const states = {
+			"faderLevel": { name: "Fader Level", type: "number", role: "level.volume", min: 0, max: 1, read: true, write: true },
+			"mute": { name: "Mute", type: "number", role: "switch.mute", min: 0, max: 1, read: true, write: true },
+			"pan": { name: "Pan", type: "number", role: "level.pan", min: 0, max: 1, read: true, write: true },
+		};
+
+		for (const [key, config] of Object.entries(states)) {
+			await this.setObjectNotExistsAsync(`${basePath}.${key}`, {
+				type: "state",
+				common: config as any,
+				native: {},
+			});
+		}
 	}
 
 	private async createFxObjects(fx: number): Promise<void> {
@@ -276,22 +305,41 @@ class Soundcraft extends utils.Adapter {
 			);
 		}
 
-	for (let i = 0; i < this.mixerChannels.aux; i++) {
-		const auxMaster = this.mixer.master.aux(i);
-		const prefix = `aux.${i}`;
+		for (let i = 0; i < this.mixerChannels.aux; i++) {
+			const auxMaster = this.mixer.master.aux(i);
+			const prefix = `aux.${i}`;
 
-		this.subscriptions.push(
-			auxMaster.faderLevel$.subscribe((val: number) =>
-				this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
-			),
-			auxMaster.mute$.subscribe((val: number) =>
-				this.setStateAsync(`${prefix}.mute`, { val, ack: true })
-			),
-			auxMaster.pan$.subscribe((val: number) =>
-				this.setStateAsync(`${prefix}.pan`, { val, ack: true })
-			)
-		);
-	}
+			this.subscriptions.push(
+				auxMaster.faderLevel$.subscribe((val: number) =>
+					this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
+				),
+				auxMaster.mute$.subscribe((val: number) =>
+					this.setStateAsync(`${prefix}.mute`, { val, ack: true })
+				),
+				auxMaster.pan$.subscribe((val: number) =>
+					this.setStateAsync(`${prefix}.pan`, { val, ack: true })
+				)
+			);
+
+			// Subscribe to input routing for this AUX bus
+			for (let j = 0; j < this.mixerChannels.hw; j++) {
+				const auxBus = this.mixer.aux(i);
+				const auxInput = auxBus.input(j);
+				const inputPrefix = `${prefix}.input.${j}`;
+
+				this.subscriptions.push(
+					auxInput.faderLevel$.subscribe((val: number) =>
+						this.setStateAsync(`${inputPrefix}.faderLevel`, { val, ack: true })
+					),
+					auxInput.mute$.subscribe((val: number) =>
+						this.setStateAsync(`${inputPrefix}.mute`, { val, ack: true })
+					),
+					auxInput.pan$.subscribe((val: number) =>
+						this.setStateAsync(`${inputPrefix}.pan`, { val, ack: true })
+					)
+				);
+			}
+		}
 
 		for (let i = 0; i < this.mixerChannels.fx; i++) {
 			const fxMaster = this.mixer.master.fx(i);
@@ -360,6 +408,28 @@ class Soundcraft extends utils.Adapter {
 						break;
 					case "phantom":
 						this.mixer.hw(channelNum).setPhantom(Number(state.val));
+						break;
+				}
+			} else if (id.includes(".aux.") && id.includes(".input.")) {
+				// Handle AUX input routing (e.g., aux.3.input.2.faderLevel)
+				const parts = id.split(".");
+				const auxIndex = parts.findIndex(p => p === "aux");
+				const inputIndex = parts.findIndex(p => p === "input");
+				const auxNum = parseInt(parts[auxIndex + 1]);
+				const inputNum = parseInt(parts[inputIndex + 1]);
+				
+				const auxBus = this.mixer.aux(auxNum);
+				const auxInput = auxBus.input(inputNum);
+				
+				switch (stateName) {
+					case "faderLevel":
+						auxInput.setFaderLevel(Number(state.val));
+						break;
+					case "mute":
+						auxInput.setMute(Number(state.val));
+						break;
+					case "pan":
+						auxInput.setPan(Number(state.val));
 						break;
 				}
 			} else if (id.includes(".aux.")) {
