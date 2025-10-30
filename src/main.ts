@@ -415,7 +415,8 @@ class Soundcraft extends utils.Adapter {
 
 	private async getStateValueAsync<T>(observable: any): Promise<T | undefined> {
 		return new Promise((resolve) => {
-			const sub = observable.subscribe((val: T) => {
+			let sub: any;
+			sub = observable.subscribe((val: T) => {
 				sub.unsubscribe();
 				resolve(val);
 			});
