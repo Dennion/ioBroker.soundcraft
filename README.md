@@ -8,8 +8,6 @@
 
 [![NPM](https://nodei.co/npm/iobroker.soundcraft.png?downloads=true)](https://nodei.co/npm/iobroker.soundcraft/)
 
-**Tests:** ![Test and Release](https://github.com/Dennion/ioBroker.soundcraft/workflows/Test%20and%20Release/badge.svg)
-
 ## soundcraft adapter for ioBroker
 
 Control and monitor your Soundcraft Ui series digital mixer from ioBroker.
@@ -166,7 +164,7 @@ Based on the [soundcraft-ui-connection](https://www.npmjs.com/package/soundcraft
 ## License
 MIT License
 
-Copyright (c) 2025 Dennion <dennion@outlook.com>
+Copyright (c) 2025 Dennion
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

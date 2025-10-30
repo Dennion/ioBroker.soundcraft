@@ -6,7 +6,7 @@
   "homepage": "https://github.com/Dennion/ioBroker.soundcraft",
   "license": "MIT",
   "keywords": [
-    "soundcraft"
+    "soundcraft", "iobroker", "adapter"
   ],
   "repository": {
     "type": "git",
