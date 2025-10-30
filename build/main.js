@@ -379,11 +379,15 @@ class Soundcraft extends utils.Adapter {
     return new Promise((resolve) => {
       let sub;
       sub = observable.subscribe((val) => {
-        sub.unsubscribe();
+        if (sub) {
+          sub.unsubscribe();
+        }
         resolve(val);
       });
       setTimeout(() => {
-        sub.unsubscribe();
+        if (sub) {
+          sub.unsubscribe();
+        }
         resolve(void 0);
       }, 1e3);
     });
