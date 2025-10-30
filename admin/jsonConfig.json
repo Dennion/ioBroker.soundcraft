@@ -8,7 +8,6 @@
 			"sm": 12,
 			"md": 6,
 			"newLine": true,
-			"size": "lg",
 			"help": "IP address of your Soundcraft Ui mixer (e.g. 192.168.1.100)"
 		},
 		"pollInterval": {
@@ -16,7 +15,6 @@
 			"label": "Poll Interval (ms)",
 			"sm": 12,
 			"md": 6,
-			"size": "lg",
 			"min": 100,
 			"max": 10000,
 			"default": 1000,
@@ -27,7 +25,6 @@
 			"label": "Enable VU Meter",
 			"newLine": true,
 			"default": false,
-			"size": "lg",
 			"help": "Enable VU meter monitoring (may increase CPU usage)"
 		},
 		"vuMeterInterval": {
@@ -38,7 +35,6 @@
 			"min": 50,
 			"max": 1000,
 			"default": 100,
-			"size": "lg",
 			"hidden": "!data.enableVuMeter",
 			"help": "How often to update VU meter values (default: 100ms)"
 		}
