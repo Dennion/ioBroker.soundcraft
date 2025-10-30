@@ -1,0 +1,90 @@
+{
+	"common": {
+		"name": "soundcraft",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"uk": "Початкова версія",
+				"zh-cn": "首次出版"
+			}
+		},
+		"titleLang": {
+			"en": "Soundcraft",
+			"de": "Soundcraft",
+			"ru": "Саундкрафт",
+			"pt": "Sonorização",
+			"nl": "Geluidskunst",
+			"fr": "Création sonore",
+			"it": "Soundcraft",
+			"es": "sonido",
+			"pl": "Soundcraft",
+			"uk": "Soundcraft",
+			"zh-cn": "声艺"
+		},
+		"desc": {
+			"en": "Adapter to controll soundcraft sound console",
+			"de": "Adapter zur Steuerung der Soundcraft-Soundkonsole",
+			"ru": "Адаптер для управления звуковой консолью Soundcraft",
+			"pt": "Adaptador para controlar o console de som soundcraft",
+			"nl": "Adapter om de Soundcraft-geluidsconsole te bedienen",
+			"fr": "Adaptateur pour contrôler la console de son Soundcraft",
+			"it": "Adattatore per controllare la console audio Soundcraft",
+			"es": "Adaptador para controlar consola de sonido soundcraft",
+			"pl": "Adapter do sterowania konsolą dźwiękową Soundcraft",
+			"uk": "Адаптер для керування звуковою консоллю Soundcraft",
+			"zh-cn": "用于控制 soundcraft 调音台的适配器"
+		},
+		"authors": [
+			"Dennion <dennion@outlook.com>"
+		],
+		"keywords": [
+			"soundcraft"
+		],
+		"licenseInformation": {
+			"type": "free",
+			"license": "MIT"
+		},
+		"platform": "Javascript/Node.js",
+		"icon": "soundcraft.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/Dennion/ioBroker.soundcraft/main/admin/soundcraft.png",
+		"readme": "https://github.com/Dennion/ioBroker.soundcraft/blob/main/README.md",
+		"loglevel": "info",
+		"tier": 3,
+		"mode": "daemon",
+		"type": "iot-systems",
+		"compact": true,
+		"connectionType": "local",
+		"dataSource": "poll",
+		"adminUI": {
+			"config": "json"
+		},
+		"dependencies": [
+			{
+				"js-controller": ">=6.0.11"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": "7.0.23"
+			}
+		]
+	},
+	"native": {
+		"mixerIP": "",
+		"pollInterval": 1000,
+		"enableVuMeter": false,
+		"vuMeterInterval": 100
+	},
+	"objects": [],
+	"instanceObjects": []
+}
