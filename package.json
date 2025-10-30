@@ -1,5 +1,5 @@
 {
-  "name": "@dennion/iobroker.soundcraft",
+  "name": "iobroker.soundcraft",
   "version": "0.0.2",
   "description": "Adapter to controll soundcraft sound console",
   "author": "Dennion <dennion@outlook.com>",
