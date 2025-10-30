@@ -12,105 +12,147 @@
 
 ## soundcraft adapter for ioBroker
 
-Adapter to controll soundcraft sound console
+Control and monitor your Soundcraft Ui series digital mixer from ioBroker.
 
-## Developer manual
-This section is intended for the developer. It can be deleted later.
+This adapter provides full integration with Soundcraft Ui12, Ui16, and Ui24R digital mixers, allowing you to control all mixer functions through ioBroker and integrate them with your smart home automation.
 
-### DISCLAIMER
+## Features
 
-Please make sure that you consider copyrights and trademarks when you use names or logos of a company and add a disclaimer to your README.
-You can check other adapters for examples or ask in the developer community. Using a name or logo of a company without permission may cause legal problems for you.
+### Supported Mixers
+- Soundcraft Ui12
+- Soundcraft Ui16  
+- Soundcraft Ui24R
 
-### Getting started
+The adapter automatically detects your mixer model and creates the appropriate channels.
 
-You are almost done, only a few steps left:
-1. Create a new repository on GitHub with the name `ioBroker.soundcraft`
-1. Initialize the current folder as a new git repository:  
-	```bash
-	git init -b main
-	git add .
-	git commit -m "Initial commit"
-	```
-1. Link your local repository with the one on GitHub:  
-	```bash
-	git remote add origin https://github.com/Dennion/ioBroker.soundcraft
-	```
+### Master Control
+- **Fader Level**: Master output volume control (0-1)
+- **Pan**: Master stereo pan control (0-1)
+- **Dim**: Master dim function for monitoring (0-1)
 
-1. Push all files to the GitHub repo:  
-	```bash
-	git push origin main
-	```
-1. Add a new secret under https://github.com/Dennion/ioBroker.soundcraft/settings/secrets. It must be named `AUTO_MERGE_TOKEN` and contain a personal access token with push access to the repository, e.g. yours. You can create a new token under https://github.com/settings/tokens.
+### Hardware Input Channels
+Full control for all hardware input channels (12/16/24 depending on model):
+- **Fader Level**: Channel volume/fader position (0-1)
+- **Mute**: Mute state (0=unmuted, 1=muted)
+- **Pan**: Stereo pan position (0-1)
+- **Gain**: Input gain/trim (0-1)
+- **Phantom Power**: +48V phantom power for condenser microphones (0=off, 1=on)
 
-1. Head over to [src/main.ts](src/main.ts) and start programming!
+### AUX Buses (10 buses)
+Each AUX bus has:
+- **Master Controls**: Fader Level, Mute, Pan for the AUX output
+- **Input Routing**: Individual control for each hardware input to the AUX bus
+  - Fader Level per input
+  - Mute per input
+  - Pan per input
+  
+Example: `aux.3.input.2.faderLevel` controls how much of Input 2 is sent to AUX 3
 
-### Best Practices
-We've collected some [best practices](https://github.com/ioBroker/ioBroker.repositories#development-and-coding-best-practices) regarding ioBroker development and coding in general. If you're new to ioBroker or Node.js, you should
-check them out. If you're already experienced, you should also take a look at them - you might learn something new :)
+### FX Buses (4 buses)
+- **Fader Level**: FX send level (0-1)
+- **Mute**: FX mute state (0-1)
 
-### Scripts in `package.json`
-Several npm scripts are predefined for your convenience. You can run them using `npm run <scriptname>`
-| Script name | Description |
-|-------------|-------------|
-| `build` | Compile the TypeScript sources. |
-| `watch` | Compile the TypeScript sources and watch for changes. |
-| `test:ts` | Executes the tests you defined in `*.test.ts` files. |
-| `test:package` | Ensures your `package.json` and `io-package.json` are valid. |
-| `test:integration` | Tests the adapter startup with an actual instance of ioBroker. |
-| `test` | Performs a minimal test run on package files and your tests. |
-| `check` | Performs a type-check on your code (without compiling anything). |
-| `lint` | Runs `ESLint` to check your code for formatting errors and potential bugs. |
-| `translate` | Translates texts in your adapter to all required languages, see [`@iobroker/adapter-dev`](https://github.com/ioBroker/adapter-dev#manage-translations) for more details. |
-| `release` | Creates a new release, see [`@alcalzone/release-script`](https://github.com/AlCalzone/release-script#usage) for more details. |
+### Mute Groups (6 groups)
+- Control mute groups 1-6 (0=unmuted, 1=muted)
+- Mute/unmute multiple channels simultaneously
 
-### Configuring the compilation
-The adapter template uses [esbuild](https://esbuild.github.io/) to compile TypeScript and/or React code. You can configure many compilation settings 
-either in `tsconfig.json` or by changing options for the build tasks. These options are described in detail in the
-[`@iobroker/adapter-dev` documentation](https://github.com/ioBroker/adapter-dev#compile-adapter-files).
+### Media Player Control
+- **State**: Current player state (idle/playing/paused/stopped)
+- **Play**: Start playback
+- **Stop**: Stop playback
+- **Pause**: Pause playback
 
-### Writing tests
-When done right, testing code is invaluable, because it gives you the 
-confidence to change your code while knowing exactly if and when 
-something breaks. A good read on the topic of test-driven development 
-is https://hackernoon.com/introduction-to-test-driven-development-tdd-61a13bc92d92. 
-Although writing tests before the code might seem strange at first, but it has very 
-clear upsides.
+## How It Works
 
-The template provides you with basic tests for the adapter startup and package files.
-It is recommended that you add your own tests into the mix.
+### Connection
+The adapter connects to your Soundcraft Ui mixer via WebSocket over your local network. The mixer must be on the same network as your ioBroker server.
 
-### Publishing the adapter
-Using GitHub Actions, you can enable automatic releases on npm whenever you push a new git tag that matches the form 
-`v<major>.<minor>.<patch>`. We **strongly recommend** that you do. The necessary steps are described in `.github/workflows/test-and-release.yml`.
+### Real-time Synchronization
+- All mixer changes (via hardware, web interface, or app) are automatically synchronized to ioBroker
+- Changes made in ioBroker are immediately sent to the mixer
+- Uses RxJS observables for efficient real-time updates
 
-Since you installed the release script, you can create a new
-release simply by calling:
-```bash
-npm run release
+### Configuration
+1. Install the adapter from the ioBroker repository or npm
+2. Configure the adapter instance:
+   - **Mixer IP Address**: The IP address of your Soundcraft Ui mixer (e.g., 192.168.1.100)
+   - **Poll Interval**: How often to check connection status (default: 1000ms)
+   - **Enable VU Meter**: Optional VU meter monitoring (increases CPU usage)
+   - **VU Meter Interval**: Update frequency for VU meters (default: 100ms)
+
+### Object Structure
+
 ```
-Additional command line options for the release script are explained in the
-[release-script documentation](https://github.com/AlCalzone/release-script#command-line).
+soundcraft.0/
+├── info/
+│   ├── connection (boolean)
+│   └── model (string)
+├── master/
+│   ├── faderLevel
+│   ├── pan
+│   └── dim
+├── hw/
+│   ├── 0/
+│   │   ├── faderLevel
+│   │   ├── mute
+│   │   ├── pan
+│   │   ├── gain
+│   │   └── phantom
+│   ├── 1/ ...
+│   └── 23/ (depending on model)
+├── aux/
+│   ├── 0/
+│   │   ├── faderLevel
+│   │   ├── mute
+│   │   ├── pan
+│   │   └── input/
+│   │       ├── 0/ (faderLevel, mute, pan)
+│   │       ├── 1/ ...
+│   │       └── 23/ (all hardware inputs)
+│   ├── 1/ ...
+│   └── 9/
+├── fx/
+│   ├── 0/ (faderLevel, mute)
+│   ├── 1/ ...
+│   └── 3/
+├── muteGroup/
+│   ├── 1
+│   ├── 2
+│   └── 6
+└── player/
+    ├── state
+    ├── play
+    ├── stop
+    └── pause
+```
 
-To get your adapter released in ioBroker, please refer to the documentation 
-of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#requirements-for-adapter-to-get-added-to-the-latest-repository).
+## Use Cases
 
-### Test the adapter manually on a local ioBroker installation
-In order to install the adapter locally without publishing, the following steps are recommended:
-1. Create a tarball from your dev directory:  
-	```bash
-	npm pack
-	```
-1. Upload the resulting file to your ioBroker host
-1. Install it locally (The paths are different on Windows):
-	```bash
-	cd /opt/iobroker
-	npm i /path/to/tarball.tgz
-	```
+### Home Automation Examples
+- Automatically mute all inputs when leaving home
+- Set specific mixer scenes based on time of day
+- Control background music volume based on room occupancy
+- Integrate mixer control with voice assistants via ioBroker
+- Monitor connection status and send alerts if mixer goes offline
+- Create custom control panels in ioBroker VIS
 
-For later updates, the above procedure is not necessary. Just do the following:
-1. Overwrite the changed files in the adapter directory (`/opt/iobroker/node_modules/iobroker.soundcraft`)
-1. Execute `iobroker upload soundcraft` on the ioBroker host
+### Professional Applications
+- Remote mixer control for installed sound systems
+- Automated venue setups
+- Integration with lighting and other show control systems
+- Preset recall through ioBroker scripts
+- Monitoring and logging of mixer settings
+
+## Requirements
+
+- ioBroker server (Node.js >= 20)
+- Soundcraft Ui12, Ui16, or Ui24R mixer
+- Network connection between ioBroker and mixer
+- Admin adapter >= 5.0.0
+
+## Technical Details
+
+Based on the [soundcraft-ui-connection](https://www.npmjs.com/package/soundcraft-ui-connection) library (v4.0.0), which provides WebSocket communication with Soundcraft Ui mixers.
 
 ## Changelog
 <!--
@@ -118,7 +160,7 @@ For later updates, the above procedure is not necessary. Just do the following:
 	### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 0.0.1
 * (Dennion) initial release
 
 ## License

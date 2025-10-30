@@ -31,11 +31,11 @@ class Soundcraft extends utils.Adapter {
 		try {
 			this.mixer = new SoundcraftUI(this.config.mixerIP);
 
-		const statusSub = this.mixer.status$.subscribe((status) => {
-			const isConnected = status.type === "OPEN";
-			this.log.info(`Connection status: ${status.type}`);
-			this.setStateAsync("info.connection", { val: isConnected, ack: true });
-		});
+			const statusSub = this.mixer.status$.subscribe((status) => {
+				const isConnected = status.type === "OPEN";
+				this.log.info(`Connection status: ${status.type}`);
+				this.setStateAsync("info.connection", { val: isConnected, ack: true });
+			});
 			this.subscriptions.push(statusSub);
 
 			await this.mixer.connect();
@@ -417,10 +417,8 @@ class Soundcraft extends utils.Adapter {
 				const inputIndex = parts.findIndex(p => p === "input");
 				const auxNum = parseInt(parts[auxIndex + 1]);
 				const inputNum = parseInt(parts[inputIndex + 1]);
-				
 				const auxBus = this.mixer.aux(auxNum);
 				const auxInput = auxBus.input(inputNum);
-				
 				switch (stateName) {
 					case "faderLevel":
 						auxInput.setFaderLevel(Number(state.val));
