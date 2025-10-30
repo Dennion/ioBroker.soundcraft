@@ -485,7 +485,6 @@ class Soundcraft extends utils.Adapter {
 		return new Promise((resolve) => {
 			let sub: any;
 			let timeoutHandle: NodeJS.Timeout | null = null;
-			
 			sub = observable.subscribe((val: T) => {
 				if (timeoutHandle) {
 					clearTimeout(timeoutHandle);
@@ -496,7 +495,6 @@ class Soundcraft extends utils.Adapter {
 				}
 				resolve(val);
 			});
-			
 			timeoutHandle = setTimeout(() => {
 				timeoutHandle = null;
 				if (sub) {
