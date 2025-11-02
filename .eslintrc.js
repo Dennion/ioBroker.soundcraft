@@ -10,6 +10,11 @@ module.exports = {
 		"plugin:@typescript-eslint/recommended", // Uses the recommended rules from the @typescript-eslint/eslint-plugin
 	],
 	plugins: [],
+	ignorePatterns: [
+		"build/*",
+		"**/.eslintrc.js",
+		"admin/words.js"
+	],
 	rules: {
 		"indent": "off",
 		"@typescript-eslint/indent": [
