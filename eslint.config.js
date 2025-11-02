@@ -31,9 +31,7 @@ module.exports = defineConfig([{
     plugins: {},
 
     rules: {
-        "indent": "off",
-
-        "@typescript-eslint/indent": ["error", "tab", {
+        "indent": ["error", "tab", {
             "SwitchCase": 1,
         }],
 

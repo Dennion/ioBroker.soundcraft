@@ -483,24 +483,28 @@ class Soundcraft extends utils.Adapter {
 
 	private async getStateValueAsync<T>(observable: any): Promise<T | undefined> {
 		return new Promise((resolve) => {
-			let sub: any;
 			let timeoutHandle: NodeJS.Timeout | null = null;
-			sub = observable.subscribe((val: T) => {
-				if (timeoutHandle) {
-					clearTimeout(timeoutHandle);
-					timeoutHandle = null;
-				}
-				if (sub) {
+			let resolved = false;
+
+			const sub = observable.subscribe((val: T) => {
+				if (!resolved) {
+					resolved = true;
+					if (timeoutHandle) {
+						clearTimeout(timeoutHandle);
+						timeoutHandle = null;
+					}
 					sub.unsubscribe();
+					resolve(val);
 				}
-				resolve(val);
 			});
+
 			timeoutHandle = setTimeout(() => {
-				timeoutHandle = null;
-				if (sub) {
+				if (!resolved) {
+					resolved = true;
+					timeoutHandle = null;
 					sub.unsubscribe();
+					resolve(undefined);
 				}
-				resolve(undefined);
 			}, 1000);
 		});
 	}
