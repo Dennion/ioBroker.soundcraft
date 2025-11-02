@@ -8,6 +8,8 @@
 
 [![NPM](https://nodei.co/npm/iobroker.soundcraft.png?downloads=true)](https://nodei.co/npm/iobroker.soundcraft/)
 
+**Tests:** ![Test and Release](https://github.com/Dennion/ioBroker.soundcraft/workflows/Test%20and%20Release/badge.svg)
+
 ## soundcraft adapter for ioBroker
 
 Control and monitor your Soundcraft Ui series digital mixer from ioBroker.
