@@ -161,7 +161,7 @@ Based on the [soundcraft-ui-connection](https://www.npmjs.com/package/soundcraft
 -->
 
 ### 0.0.1
-* (Dennion) initial release
+* (Dennion) Release first Version
 
 ## License
 MIT License
