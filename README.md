@@ -161,7 +161,7 @@ Based on the [soundcraft-ui-connection](https://www.npmjs.com/package/soundcraft
 -->
 
 ### 0.0.2
-* (Dennion) fix Release issue and update eslint settings 
+* (Dennion) Updated ESLint settings and release configuration 
 
 ### 0.0.1
 * (Dennion) Release first version
