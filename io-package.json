@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "soundcraft",
-		"version": "0.0.1",
+		"version": "0.0.2",
 		"news": {
+			"0.0.2": {
+				"en": "Updated ESLint settings and release configuration",
+				"de": "Aktualisierte ESLint-Einstellungen und Release-Konfiguration",
+				"ru": "Обновлены настройки ESLint и конфигурация выпуска",
+				"pt": "Configurações do ESLint e configuração de lançamento atualizadas",
+				"nl": "Bijgewerkte ESLint-instellingen en releaseconfiguratie",
+				"fr": "Paramètres ESLint et configuration de publication mis à jour",
+				"it": "Impostazioni ESLint e configurazione di rilascio aggiornate",
+				"es": "Configuraciones de ESLint y configuración de lanzamiento actualizadas",
+				"pl": "Zaktualizowane ustawienia ESLint i konfiguracja wydania",
+				"uk": "Оновлені налаштування ESLint та конфігурація випуску",
+				"zh-cn": "更新了 ESLint 设置和发布配置"
+			},
 			"0.0.1": {
 				"en": "initial release",
 				"de": "Erstveröffentlichung",
