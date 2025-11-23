@@ -513,14 +513,19 @@ class Soundcraft extends utils.Adapter {
     return new Promise((resolve) => {
       let timeoutHandle = void 0;
       let resolved = false;
-      const sub = observable.subscribe((val) => {
+      const subscription = {
+        sub: null
+      };
+      subscription.sub = observable.subscribe((val) => {
         if (!resolved) {
           resolved = true;
           if (timeoutHandle) {
             this.clearTimeout(timeoutHandle);
             timeoutHandle = void 0;
           }
-          sub.unsubscribe();
+          if (subscription.sub) {
+            subscription.sub.unsubscribe();
+          }
           resolve(val);
         }
       });
@@ -528,7 +533,9 @@ class Soundcraft extends utils.Adapter {
         if (!resolved) {
           resolved = true;
           timeoutHandle = void 0;
-          sub.unsubscribe();
+          if (subscription.sub) {
+            subscription.sub.unsubscribe();
+          }
           resolve(void 0);
         }
       }, 1e3);

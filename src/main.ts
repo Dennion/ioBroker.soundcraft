@@ -572,15 +572,20 @@ class Soundcraft extends utils.Adapter {
         return new Promise(resolve => {
             let timeoutHandle: ioBroker.Timeout | undefined = undefined;
             let resolved = false;
+            const subscription = {
+                sub: null as Subscription | null,
+            };
 
-            const sub = observable.subscribe((val: T) => {
+            subscription.sub = observable.subscribe((val: T) => {
                 if (!resolved) {
                     resolved = true;
                     if (timeoutHandle) {
                         this.clearTimeout(timeoutHandle);
                         timeoutHandle = undefined;
                     }
-                    sub.unsubscribe();
+                    if (subscription.sub) {
+                        subscription.sub.unsubscribe();
+                    }
                     resolve(val);
                 }
             });
@@ -589,7 +594,9 @@ class Soundcraft extends utils.Adapter {
                 if (!resolved) {
                     resolved = true;
                     timeoutHandle = undefined;
-                    sub.unsubscribe();
+                    if (subscription.sub) {
+                        subscription.sub.unsubscribe();
+                    }
                     resolve(undefined);
                 }
             }, 1000);
