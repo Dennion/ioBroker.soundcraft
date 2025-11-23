@@ -1,6 +1,6 @@
 {
   "name": "iobroker.soundcraft",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Adapter to controll soundcraft sound console",
   "author": "Dennion <dennion@outlook.com>",
   "homepage": "https://github.com/Dennion/ioBroker.soundcraft",
