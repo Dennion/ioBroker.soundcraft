@@ -45,21 +45,23 @@ class Soundcraft extends utils.Adapter {
       const statusSub = this.mixer.status$.subscribe((status) => {
         const isConnected = status.type === "OPEN";
         this.log.info(`Connection status: ${status.type}`);
-        this.setStateAsync("info.connection", { val: isConnected, ack: true });
+        void this.setStateAsync("info.connection", { val: isConnected, ack: true });
       });
       this.subscriptions.push(statusSub);
       await this.mixer.connect();
       this.log.info("Successfully connected to mixer");
       await this.detectMixerCapabilities();
       await this.createObjectStructure();
-      await this.subscribeMixerStates();
+      this.subscribeMixerStates();
       this.subscribeStates("*");
     } catch (error) {
-      this.log.error(`Failed to connect to mixer: ${error}`);
+      this.log.error(`Failed to connect to mixer: ${String(error)}`);
     }
   }
   async detectMixerCapabilities() {
-    if (!this.mixer) return;
+    if (!this.mixer) {
+      return;
+    }
     const modelName = await this.getStateValueAsync(this.mixer.deviceInfo.model$);
     this.log.info(`Detected mixer model: ${modelName || "Unknown"}`);
     const model = String(modelName || "");
@@ -82,7 +84,13 @@ class Soundcraft extends utils.Adapter {
     });
     await this.setObjectNotExistsAsync("info.connection", {
       type: "state",
-      common: { name: "Connection status", type: "boolean", role: "indicator.connected", read: true, write: false },
+      common: {
+        name: "Connection status",
+        type: "boolean",
+        role: "indicator.connected",
+        read: true,
+        write: false
+      },
       native: {}
     });
     await this.setObjectNotExistsAsync("info.model", {
@@ -91,15 +99,35 @@ class Soundcraft extends utils.Adapter {
       native: {}
     });
     await this.createMasterObjects();
+    await this.setObjectNotExistsAsync("hw", {
+      type: "device",
+      common: { name: "Hardware Inputs" },
+      native: {}
+    });
     for (let i = 0; i < this.mixerChannels.hw; i++) {
       await this.createChannelObjects("hw", i);
     }
+    await this.setObjectNotExistsAsync("aux", {
+      type: "device",
+      common: { name: "AUX Buses" },
+      native: {}
+    });
     for (let i = 0; i < this.mixerChannels.aux; i++) {
       await this.createAuxObjects(i);
     }
+    await this.setObjectNotExistsAsync("fx", {
+      type: "device",
+      common: { name: "FX Buses" },
+      native: {}
+    });
     for (let i = 0; i < this.mixerChannels.fx; i++) {
       await this.createFxObjects(i);
     }
+    await this.setObjectNotExistsAsync("muteGroup", {
+      type: "device",
+      common: { name: "Mute Groups" },
+      native: {}
+    });
     for (let i = 1; i <= this.mixerChannels.muteGroups; i++) {
       await this.createMuteGroupObjects(i);
     }
@@ -112,9 +140,17 @@ class Soundcraft extends utils.Adapter {
       native: {}
     });
     const states = {
-      "faderLevel": { name: "Fader Level", type: "number", role: "level.volume", min: 0, max: 1, read: true, write: true },
-      "pan": { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true },
-      "dim": { name: "Dim", type: "number", role: "level.dimmer", min: 0, max: 1, read: true, write: true }
+      faderLevel: {
+        name: "Fader Level",
+        type: "number",
+        role: "level.volume",
+        min: 0,
+        max: 1,
+        read: true,
+        write: true
+      },
+      pan: { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true },
+      dim: { name: "Dim", type: "number", role: "level.dimmer", min: 0, max: 1, read: true, write: true }
     };
     for (const [key, config] of Object.entries(states)) {
       await this.setObjectNotExistsAsync(`master.${key}`, {
@@ -132,11 +168,19 @@ class Soundcraft extends utils.Adapter {
       native: {}
     });
     const states = {
-      "faderLevel": { name: "Fader Level", type: "number", role: "level.volume", min: 0, max: 1, read: true, write: true },
-      "mute": { name: "Mute", type: "boolean", role: "switch", read: true, write: true },
-      "pan": { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true },
-      "gain": { name: "Gain", type: "number", role: "level", min: 0, max: 1, read: true, write: true },
-      "phantom": { name: "Phantom Power (+48V)", type: "boolean", role: "switch", read: true, write: true }
+      faderLevel: {
+        name: "Fader Level",
+        type: "number",
+        role: "level.volume",
+        min: 0,
+        max: 1,
+        read: true,
+        write: true
+      },
+      mute: { name: "Mute", type: "boolean", role: "switch", read: true, write: true },
+      pan: { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true },
+      gain: { name: "Gain", type: "number", role: "level", min: 0, max: 1, read: true, write: true },
+      phantom: { name: "Phantom Power (+48V)", type: "boolean", role: "switch", read: true, write: true }
     };
     for (const [key, config] of Object.entries(states)) {
       await this.setObjectNotExistsAsync(`${basePath}.${key}`, {
@@ -154,9 +198,17 @@ class Soundcraft extends utils.Adapter {
       native: {}
     });
     const states = {
-      "faderLevel": { name: "Fader Level", type: "number", role: "level.volume", min: 0, max: 1, read: true, write: true },
-      "mute": { name: "Mute", type: "boolean", role: "switch", read: true, write: true },
-      "pan": { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true }
+      faderLevel: {
+        name: "Fader Level",
+        type: "number",
+        role: "level.volume",
+        min: 0,
+        max: 1,
+        read: true,
+        write: true
+      },
+      mute: { name: "Mute", type: "boolean", role: "switch", read: true, write: true },
+      pan: { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true }
     };
     for (const [key, config] of Object.entries(states)) {
       await this.setObjectNotExistsAsync(`${basePath}.${key}`, {
@@ -182,9 +234,17 @@ class Soundcraft extends utils.Adapter {
       native: {}
     });
     const states = {
-      "faderLevel": { name: "Fader Level", type: "number", role: "level.volume", min: 0, max: 1, read: true, write: true },
-      "mute": { name: "Mute", type: "boolean", role: "switch", read: true, write: true },
-      "pan": { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true }
+      faderLevel: {
+        name: "Fader Level",
+        type: "number",
+        role: "level.volume",
+        min: 0,
+        max: 1,
+        read: true,
+        write: true
+      },
+      mute: { name: "Mute", type: "boolean", role: "switch", read: true, write: true },
+      pan: { name: "Pan", type: "number", role: "level", min: 0, max: 1, read: true, write: true }
     };
     for (const [key, config] of Object.entries(states)) {
       await this.setObjectNotExistsAsync(`${basePath}.${key}`, {
@@ -202,8 +262,16 @@ class Soundcraft extends utils.Adapter {
       native: {}
     });
     const states = {
-      "faderLevel": { name: "Fader Level", type: "number", role: "level.volume", min: 0, max: 1, read: true, write: true },
-      "mute": { name: "Mute", type: "boolean", role: "switch", read: true, write: true }
+      faderLevel: {
+        name: "Fader Level",
+        type: "number",
+        role: "level.volume",
+        min: 0,
+        max: 1,
+        read: true,
+        write: true
+      },
+      mute: { name: "Mute", type: "boolean", role: "switch", read: true, write: true }
     };
     for (const [key, config] of Object.entries(states)) {
       await this.setObjectNotExistsAsync(`${basePath}.${key}`, {
@@ -227,10 +295,10 @@ class Soundcraft extends utils.Adapter {
       native: {}
     });
     const states = {
-      "state": { name: "Player State", type: "string", role: "media.state", read: true, write: false },
-      "play": { name: "Play", type: "boolean", role: "button.play", read: false, write: true },
-      "stop": { name: "Stop", type: "boolean", role: "button.stop", read: false, write: true },
-      "pause": { name: "Pause", type: "boolean", role: "button.pause", read: false, write: true }
+      state: { name: "Player State", type: "string", role: "media.state", read: true, write: false },
+      play: { name: "Play", type: "boolean", role: "button.play", read: false, write: true },
+      stop: { name: "Stop", type: "boolean", role: "button.stop", read: false, write: true },
+      pause: { name: "Pause", type: "boolean", role: "button.pause", read: false, write: true }
     };
     for (const [key, config] of Object.entries(states)) {
       await this.setObjectNotExistsAsync(`player.${key}`, {
@@ -240,17 +308,19 @@ class Soundcraft extends utils.Adapter {
       });
     }
   }
-  async subscribeMixerStates() {
-    if (!this.mixer) return;
+  subscribeMixerStates() {
+    if (!this.mixer) {
+      return;
+    }
     this.subscriptions.push(
       this.mixer.master.faderLevel$.subscribe(
-        (val) => this.setStateAsync("master.faderLevel", { val, ack: true })
+        (val) => void this.setStateAsync("master.faderLevel", { val, ack: true })
       ),
       this.mixer.master.pan$.subscribe(
-        (val) => this.setStateAsync("master.pan", { val, ack: true })
+        (val) => void this.setStateAsync("master.pan", { val, ack: true })
       ),
       this.mixer.master.dim$.subscribe(
-        (val) => this.setStateAsync("master.dim", { val, ack: true })
+        (val) => void this.setStateAsync("master.dim", { val, ack: true })
       )
     );
     for (let i = 0; i < this.mixerChannels.hw; i++) {
@@ -259,19 +329,15 @@ class Soundcraft extends utils.Adapter {
       const prefix = `hw.${i}`;
       this.subscriptions.push(
         ch.faderLevel$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
+          (val) => void this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
         ),
         ch.mute$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.mute`, { val: Boolean(val), ack: true })
+          (val) => void this.setStateAsync(`${prefix}.mute`, { val: Boolean(val), ack: true })
         ),
-        ch.pan$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.pan`, { val, ack: true })
-        ),
-        hwCh.gain$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.gain`, { val, ack: true })
-        ),
+        ch.pan$.subscribe((val) => void this.setStateAsync(`${prefix}.pan`, { val, ack: true })),
+        hwCh.gain$.subscribe((val) => void this.setStateAsync(`${prefix}.gain`, { val, ack: true })),
         hwCh.phantom$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.phantom`, { val: Boolean(val), ack: true })
+          (val) => void this.setStateAsync(`${prefix}.phantom`, { val: Boolean(val), ack: true })
         )
       );
     }
@@ -280,14 +346,12 @@ class Soundcraft extends utils.Adapter {
       const prefix = `aux.${i}`;
       this.subscriptions.push(
         auxMaster.faderLevel$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
+          (val) => void this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
         ),
         auxMaster.mute$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.mute`, { val: Boolean(val), ack: true })
+          (val) => void this.setStateAsync(`${prefix}.mute`, { val: Boolean(val), ack: true })
         ),
-        auxMaster.pan$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.pan`, { val, ack: true })
-        )
+        auxMaster.pan$.subscribe((val) => void this.setStateAsync(`${prefix}.pan`, { val, ack: true }))
       );
       for (let j = 0; j < this.mixerChannels.hw; j++) {
         const auxBus = this.mixer.aux(i);
@@ -295,13 +359,13 @@ class Soundcraft extends utils.Adapter {
         const inputPrefix = `${prefix}.input.${j}`;
         this.subscriptions.push(
           auxInput.faderLevel$.subscribe(
-            (val) => this.setStateAsync(`${inputPrefix}.faderLevel`, { val, ack: true })
+            (val) => void this.setStateAsync(`${inputPrefix}.faderLevel`, { val, ack: true })
           ),
           auxInput.mute$.subscribe(
-            (val) => this.setStateAsync(`${inputPrefix}.mute`, { val: Boolean(val), ack: true })
+            (val) => void this.setStateAsync(`${inputPrefix}.mute`, { val: Boolean(val), ack: true })
           ),
           auxInput.pan$.subscribe(
-            (val) => this.setStateAsync(`${inputPrefix}.pan`, { val, ack: true })
+            (val) => void this.setStateAsync(`${inputPrefix}.pan`, { val, ack: true })
           )
         );
       }
@@ -311,10 +375,10 @@ class Soundcraft extends utils.Adapter {
       const prefix = `fx.${i}`;
       this.subscriptions.push(
         fxMaster.faderLevel$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
+          (val) => void this.setStateAsync(`${prefix}.faderLevel`, { val, ack: true })
         ),
         fxMaster.mute$.subscribe(
-          (val) => this.setStateAsync(`${prefix}.mute`, { val: Boolean(val), ack: true })
+          (val) => void this.setStateAsync(`${prefix}.mute`, { val: Boolean(val), ack: true })
         )
       );
     }
@@ -322,18 +386,20 @@ class Soundcraft extends utils.Adapter {
       const muteGroup = this.mixer.muteGroup(i);
       this.subscriptions.push(
         muteGroup.state$.subscribe(
-          (val) => this.setStateAsync(`muteGroup.${i}`, { val: Boolean(val), ack: true })
+          (val) => void this.setStateAsync(`muteGroup.${i}`, { val: Boolean(val), ack: true })
         )
       );
     }
     this.subscriptions.push(
       this.mixer.player.state$.subscribe(
-        (val) => this.setStateAsync("player.state", { val: String(val), ack: true })
+        (val) => void this.setStateAsync("player.state", { val: String(val), ack: true })
       )
     );
   }
-  async onStateChange(id, state) {
-    if (!state || state.ack || !this.mixer) return;
+  onStateChange(id, state) {
+    if (!state || state.ack || !this.mixer) {
+      return;
+    }
     const idParts = id.split(".");
     const deviceId = idParts[idParts.length - 2];
     const stateName = idParts[idParts.length - 1];
@@ -424,18 +490,24 @@ class Soundcraft extends utils.Adapter {
       } else if (id.includes(".player.")) {
         switch (stateName) {
           case "play":
-            if (state.val) this.mixer.player.play();
+            if (state.val) {
+              this.mixer.player.play();
+            }
             break;
           case "stop":
-            if (state.val) this.mixer.player.stop();
+            if (state.val) {
+              this.mixer.player.stop();
+            }
             break;
           case "pause":
-            if (state.val) this.mixer.player.pause();
+            if (state.val) {
+              this.mixer.player.pause();
+            }
             break;
         }
       }
     } catch (error) {
-      this.log.error(`Error handling state change for ${id}: ${error}`);
+      this.log.error(`Error handling state change for ${id}: ${String(error)}`);
     }
   }
   async getStateValueAsync(observable) {
@@ -473,12 +545,12 @@ class Soundcraft extends utils.Adapter {
       this.subscriptions.forEach((sub) => sub.unsubscribe());
       this.subscriptions = [];
       if (this.mixer) {
-        this.mixer.disconnect();
+        void this.mixer.disconnect();
         this.mixer = null;
       }
       callback();
     } catch (e) {
-      this.log.error(`Error during unload: ${e}`);
+      this.log.error(`Error during unload: ${String(e)}`);
       callback();
     }
   }

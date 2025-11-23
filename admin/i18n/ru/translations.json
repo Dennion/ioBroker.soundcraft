@@ -1,5 +1,13 @@
 {
-	"soundcraft adapter settings": "Настройки адаптера для soundcraft",
+	"Enable VU Meter": "Включить измеритель уровня громкости",
+	"Enable VU meter monitoring (may increase CPU usage)": "Включить мониторинг измерителя уровня громкости (может увеличить загрузку ЦП)",
+	"How often to update VU meter values (default: 100ms)": "Как часто обновлять значения индикатора уровня громкости (по умолчанию: 100 мс)",
+	"IP address of your Soundcraft Ui mixer (e.g. 192.168.1.100)": "IP-адрес вашего микшера Soundcraft Ui (например, 192.168.1.100)",
+	"Interval for polling mixer state (default: 1000ms)": "Интервал опроса состояния микшера (по умолчанию: 1000 мс)",
+	"Mixer IP Address": "IP-адрес микшера",
+	"Poll Interval (ms)": "Интервал опроса (мс)",
+	"VU Meter Update Interval (ms)": "Интервал обновления измерителя уровня громкости (мс)",
 	"option1": "вариант 1",
-	"option2": "вариант 2"
+	"option2": "вариант 2",
+	"soundcraft adapter settings": "Настройки адаптера для soundcraft"
 }

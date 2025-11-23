@@ -14,6 +14,7 @@ export default [
             '*.config.mjs',
             'build',
             'dist',
+            'node_modules',
             'admin/build', 
             'admin/words.js',
             'admin/admin.d.ts',
