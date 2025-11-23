@@ -26,7 +26,6 @@ var import_soundcraft_ui_connection = require("soundcraft-ui-connection");
 class Soundcraft extends utils.Adapter {
   mixer = null;
   subscriptions = [];
-  pollInterval = null;
   mixerChannels = { hw: 0, aux: 0, fx: 0, muteGroups: 6 };
   constructor(options = {}) {
     super({ ...options, name: "soundcraft" });
@@ -512,23 +511,23 @@ class Soundcraft extends utils.Adapter {
   }
   async getStateValueAsync(observable) {
     return new Promise((resolve) => {
-      let timeoutHandle = null;
+      let timeoutHandle = void 0;
       let resolved = false;
       const sub = observable.subscribe((val) => {
         if (!resolved) {
           resolved = true;
           if (timeoutHandle) {
-            clearTimeout(timeoutHandle);
-            timeoutHandle = null;
+            this.clearTimeout(timeoutHandle);
+            timeoutHandle = void 0;
           }
           sub.unsubscribe();
           resolve(val);
         }
       });
-      timeoutHandle = setTimeout(() => {
+      timeoutHandle = this.setTimeout(() => {
         if (!resolved) {
           resolved = true;
-          timeoutHandle = null;
+          timeoutHandle = void 0;
           sub.unsubscribe();
           resolve(void 0);
         }
@@ -538,10 +537,6 @@ class Soundcraft extends utils.Adapter {
   onUnload(callback) {
     try {
       this.log.info("Disconnecting from mixer...");
-      if (this.pollInterval) {
-        clearInterval(this.pollInterval);
-        this.pollInterval = null;
-      }
       this.subscriptions.forEach((sub) => sub.unsubscribe());
       this.subscriptions = [];
       if (this.mixer) {

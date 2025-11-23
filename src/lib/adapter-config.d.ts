@@ -5,9 +5,6 @@ declare global {
 	namespace ioBroker {
 		interface AdapterConfig {
 			mixerIP: string;
-			pollInterval: number;
-			enableVuMeter: boolean;
-			vuMeterInterval: number;
 		}
 	}
 }

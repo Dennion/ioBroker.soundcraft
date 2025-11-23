@@ -9,7 +9,6 @@ import type { Subscription } from 'rxjs';
 class Soundcraft extends utils.Adapter {
     private mixer: SoundcraftUI | null = null;
     private subscriptions: Subscription[] = [];
-    private pollInterval: NodeJS.Timeout | null = null;
 
     private mixerChannels = { hw: 0, aux: 0, fx: 0, muteGroups: 6 };
 
@@ -571,25 +570,25 @@ class Soundcraft extends utils.Adapter {
 
     private async getStateValueAsync<T>(observable: any): Promise<T | undefined> {
         return new Promise(resolve => {
-            let timeoutHandle: NodeJS.Timeout | null = null;
+            let timeoutHandle: ioBroker.Timeout | undefined = undefined;
             let resolved = false;
 
             const sub = observable.subscribe((val: T) => {
                 if (!resolved) {
                     resolved = true;
                     if (timeoutHandle) {
-                        clearTimeout(timeoutHandle);
-                        timeoutHandle = null;
+                        this.clearTimeout(timeoutHandle);
+                        timeoutHandle = undefined;
                     }
                     sub.unsubscribe();
                     resolve(val);
                 }
             });
 
-            timeoutHandle = setTimeout(() => {
+            timeoutHandle = this.setTimeout(() => {
                 if (!resolved) {
                     resolved = true;
-                    timeoutHandle = null;
+                    timeoutHandle = undefined;
                     sub.unsubscribe();
                     resolve(undefined);
                 }
@@ -600,11 +599,6 @@ class Soundcraft extends utils.Adapter {
     private onUnload(callback: () => void): void {
         try {
             this.log.info('Disconnecting from mixer...');
-
-            if (this.pollInterval) {
-                clearInterval(this.pollInterval);
-                this.pollInterval = null;
-            }
 
             this.subscriptions.forEach(sub => sub.unsubscribe());
             this.subscriptions = [];
