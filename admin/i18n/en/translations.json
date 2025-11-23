@@ -1,5 +1,5 @@
 {
 	"soundcraft adapter settings": "Adapter settings for soundcraft",
-	"option1": "option1",
-	"option2": "option2"
+	"Mixer IP Address": "Mixer IP Address",
+	"IP address of your Soundcraft Ui mixer (e.g. 192.168.1.100)": "IP address of your Soundcraft Ui mixer (e.g. 192.168.1.100)"
 }

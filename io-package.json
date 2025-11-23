@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "soundcraft",
-		"version": "0.0.2",
+		"version": "0.0.3",
 		"news": {
+			"0.0.3": {
+				"en": "Added support for Node.js 24 as well as minor bug fixes and improvements",
+				"de": "Unterstützung für Node.js 24 hinzugefügt sowie kleinere Fehlerbehebungen und Verbesserungen",
+				"ru": "Добавлена поддержка Node.js 24, а также исправлены незначительные ошибки и улучшения",
+				"pt": "Adicionado suporte para Node.js 24, bem como pequenas correções de bugs e melhorias",
+				"nl": "Ondersteuning voor Node.js 24 toegevoegd, evenals kleine bugfixes en verbeteringen",
+				"fr": "Ajout du support de Node.js 24 ainsi que des corrections de bugs mineurs et des améliorations",
+				"it": "Aggiunto il supporto per Node.js 24 oltre a piccole correzioni di bug e miglioramenti",
+				"es": "Se agregó soporte para Node.js 24, así como correcciones de errores menores y mejoras",
+				"pl": "Dodano obsługę Node.js 24 oraz drobne poprawki błędów i ulepszenia",
+				"uk": "Додано підтримку Node.js 24, а також незначні виправлення помилок та покращення",
+				"zh-cn": "添加了对 Node.js 24 的支持以及一些小的错误修复和改进"
+			},
 			"0.0.2": {
 				"en": "Updated ESLint settings and release configuration",
 				"de": "Aktualisierte ESLint-Einstellungen und Release-Konfiguration",

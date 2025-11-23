@@ -1,5 +1,13 @@
 {
-	"soundcraft adapter settings": "Adaptereinstellungen für soundcraft",
+	"Enable VU Meter": "Aktivieren Sie das VU-Meter",
+	"Enable VU meter monitoring (may increase CPU usage)": "VU-Meter-Überwachung aktivieren (kann die CPU-Auslastung erhöhen)",
+	"How often to update VU meter values (default: 100ms)": "Wie oft werden VU-Meter-Werte aktualisiert (Standard: 100 ms)",
+	"IP address of your Soundcraft Ui mixer (e.g. 192.168.1.100)": "IP-Adresse Ihres Soundcraft Ui-Mixers (z. B. 192.168.1.100)",
+	"Interval for polling mixer state (default: 1000ms)": "Intervall für die Abfrage des Mixer-Status (Standard: 1000 ms)",
+	"Mixer IP Address": "Mixer-IP-Adresse",
+	"Poll Interval (ms)": "Abfrageintervall (ms)",
+	"VU Meter Update Interval (ms)": "VU-Meter-Aktualisierungsintervall (ms)",
 	"option1": "Option1",
-	"option2": "Option2"
+	"option2": "Option2",
+	"soundcraft adapter settings": "Adaptereinstellungen für soundcraft"
 }
