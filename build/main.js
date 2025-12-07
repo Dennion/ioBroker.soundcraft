@@ -26,6 +26,7 @@ var import_soundcraft_ui_connection = require("soundcraft-ui-connection");
 class Soundcraft extends utils.Adapter {
   mixer = null;
   subscriptions = [];
+  pollInterval = void 0;
   mixerChannels = { hw: 0, aux: 0, fx: 0, muteGroups: 6 };
   constructor(options = {}) {
     super({ ...options, name: "soundcraft" });
@@ -52,6 +53,7 @@ class Soundcraft extends utils.Adapter {
       await this.detectMixerCapabilities();
       await this.createObjectStructure();
       this.subscribeMixerStates();
+      this.startPolling();
       this.subscribeStates("*");
     } catch (error) {
       this.log.error(`Failed to connect to mixer: ${String(error)}`);
@@ -541,9 +543,81 @@ class Soundcraft extends utils.Adapter {
       }, 1e3);
     });
   }
+  startPolling() {
+    const maxTimeout = 2147483647;
+    let pollInterval = this.config.pollInterval || 1e3;
+    if (pollInterval < 100) {
+      this.log.warn(`pollInterval ${pollInterval}ms is too low, using 100ms minimum`);
+      pollInterval = 100;
+    }
+    if (pollInterval > maxTimeout) {
+      this.log.warn(`pollInterval ${pollInterval}ms exceeds maximum, using ${maxTimeout}ms`);
+      pollInterval = maxTimeout;
+    }
+    if (pollInterval > 0 && this.mixer) {
+      this.pollInterval = this.setInterval(() => {
+        if (!this.mixer) {
+          this.log.warn("Mixer disconnected, stopping poll");
+          this.stopPolling();
+          return;
+        }
+        this.log.debug("Poll interval: checking mixer connection");
+        void this.getStateValueAsync(this.mixer.status$).catch((err) => {
+          this.log.warn(`Poll interval connection check failed: ${String(err)}`);
+        });
+      }, pollInterval);
+      this.log.info(`Polling started with interval: ${pollInterval}ms`);
+    }
+    if (this.config.enableVuMeter && this.mixer) {
+      const vuSub = this.mixer.vuProcessor.vuData$.subscribe((vuData) => {
+        if (vuData.master && vuData.master.length > 0) {
+          void this.setStateAsync("master.vuPost", { val: vuData.master[0].vuPost, ack: true });
+          void this.setStateAsync("master.vuPostFader", {
+            val: vuData.master[0].vuPostFader,
+            ack: true
+          });
+        }
+        if (vuData.input) {
+          vuData.input.forEach((vu, i) => {
+            if (i < this.mixerChannels.hw) {
+              void this.setStateAsync(`hw.${i}.vuPre`, { val: vu.vuPre, ack: true });
+              void this.setStateAsync(`hw.${i}.vuPost`, { val: vu.vuPost, ack: true });
+              void this.setStateAsync(`hw.${i}.vuPostFader`, { val: vu.vuPostFader, ack: true });
+            }
+          });
+        }
+        if (vuData.aux) {
+          vuData.aux.forEach((vu, i) => {
+            if (i < this.mixerChannels.aux) {
+              void this.setStateAsync(`aux.${i}.vuPost`, { val: vu.vuPost, ack: true });
+              void this.setStateAsync(`aux.${i}.vuPostFader`, { val: vu.vuPostFader, ack: true });
+            }
+          });
+        }
+        if (vuData.fx) {
+          vuData.fx.forEach((vu, i) => {
+            if (i < this.mixerChannels.fx) {
+              void this.setStateAsync(`fx.${i}.vuPostL`, { val: vu.vuPostL, ack: true });
+              void this.setStateAsync(`fx.${i}.vuPostR`, { val: vu.vuPostR, ack: true });
+            }
+          });
+        }
+      });
+      this.subscriptions.push(vuSub);
+      this.log.info(`VU meter monitoring started (reactive subscription from mixer)`);
+    }
+  }
+  stopPolling() {
+    if (this.pollInterval) {
+      this.clearInterval(this.pollInterval);
+      this.pollInterval = void 0;
+      this.log.info("Polling stopped");
+    }
+  }
   onUnload(callback) {
     try {
       this.log.info("Disconnecting from mixer...");
+      this.stopPolling();
       this.subscriptions.forEach((sub) => sub.unsubscribe());
       this.subscriptions = [];
       if (this.mixer) {

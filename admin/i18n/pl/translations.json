@@ -1,6 +1,7 @@
 {
 	"Enable VU Meter": "Włącz miernik VU",
 	"Enable VU meter monitoring (may increase CPU usage)": "Włącz monitorowanie miernika VU (może zwiększyć użycie procesora)",
+	"Enable VU meter monitoring (real-time via WebSocket)": "Włącz monitorowanie miernika VU (w czasie rzeczywistym przez WebSocket)",
 	"How often to update VU meter values (default: 100ms)": "Jak często aktualizować wartości miernika VU (domyślnie: 100 ms)",
 	"IP address of your Soundcraft Ui mixer (e.g. 192.168.1.100)": "Adres IP miksera Soundcraft Ui (np. 192.168.1.100)",
 	"Interval for polling mixer state (default: 1000ms)": "Interwał odpytywania stanu miksera (domyślnie: 1000 ms)",

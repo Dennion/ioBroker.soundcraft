@@ -160,6 +160,12 @@ Based on the [soundcraft-ui-connection](https://www.npmjs.com/package/soundcraft
 	### **WORK IN PROGRESS**
 -->
 
+### 0.0.3
+* (Dennion) Fix Translations
+* (Dennion) add Node 24 Tests
+* (Dennion) fix Interval issues
+* (Dennion) fix state roles 
+
 ### 0.0.2
 * (Dennion) Updated ESLint settings and release configuration 
 
